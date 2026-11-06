@@ -35,7 +35,12 @@ import 'package:budget/struct/navBarIconsData.dart';
 import 'package:budget/struct/quickActions.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/struct/shareBudget.dart';
+import 'package:budget/struct/cloudSync/cloudPull.dart';
+import 'package:budget/struct/cloudSync/cloudPush.dart';
+import 'package:budget/struct/cloudSync/cloudSyncConfig.dart';
+import 'package:budget/struct/cloudSync/cloudSyncLock.dart';
 import 'package:budget/struct/syncClient.dart';
+import 'package:budget/widgets/util/debouncer.dart';
 import 'package:budget/widgets/accountAndBackup.dart';
 import 'package:budget/widgets/bottomNavBar.dart';
 import 'package:budget/widgets/button.dart';
@@ -310,7 +315,12 @@ Future<bool> runAllCloudFunctions(BuildContext context,
   try {
     loadingIndeterminateKey.currentState?.setVisibility(true);
     await runForceSignIn(context);
-    await syncData(context);
+    if (isFirestoreSyncActive()) {
+      await pullCloudChanges();
+      await pushLocalChangesToCloud();
+    } else {
+      await syncData(context);
+    }
     if (appStateSettings["emailScanningPullToRefresh"] ||
         entireAppLoaded == false) {
       loadingIndeterminateKey.currentState?.setVisibility(true);
@@ -458,13 +468,22 @@ class PageNavigationFrameworkState extends State<PageNavigationFramework> {
 
       print("Entire app loaded");
 
+      final Debouncer cloudAutoSyncDebouncer = Debouncer(milliseconds: 3000);
       database.watchAllForAutoSync().listen((event) {
         // Must be logged in to perform an automatic sync - googleUser != null
         // If we remove this, it will ask the user to login though - but it can be annoying
         // Users can visually see the last time of sync, especially on web where sign-in is not automatic,
         // so it shouldn't be an issue
-        if (runningCloudFunctions == false && googleUser != null) {
-          createSyncBackup(changeMadeSync: true);
+        if (!CloudSyncLock.isApplyingCloudChanges &&
+            runningCloudFunctions == false &&
+            googleUser != null) {
+          if (isFirestoreSyncActive()) {
+            cloudAutoSyncDebouncer.run(() {
+              pushLocalChangesToCloud();
+            });
+          } else {
+            createSyncBackup(changeMadeSync: true);
+          }
         }
       });
 

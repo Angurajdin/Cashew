@@ -5,6 +5,7 @@ import 'package:budget/database/binary_string_conversion.dart';
 import 'package:budget/database/tables.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/struct/databaseGlobal.dart';
+import 'package:budget/struct/cloudSync/cloudSyncConfig.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/accountAndBackup.dart';
 import 'package:budget/widgets/navigationFramework.dart';
@@ -77,6 +78,7 @@ Debouncer backupDebounce = Debouncer(milliseconds: 5000);
 Future<bool> createSyncBackup(
     {bool changeMadeSync = false,
     bool changeMadeSyncWaitForDebounce = true}) async {
+  if (isFirestoreSyncActive()) return false;
   if (appStateSettings["hasSignedIn"] == false) return false;
   if (errorSigningInDuringCloud == true) return false;
   if (appStateSettings["backupSync"] == false) return false;
@@ -212,6 +214,7 @@ Future<bool> syncData(BuildContext context) async {
 
 // load the latest backup and import any newly modified data into the db
 Future<bool> _syncData(BuildContext context) async {
+  if (isFirestoreSyncActive()) return false;
   if (canSyncData == false) return false;
   // Syncing data seems to fail on iOS debug mode (at least on iPad).
   // When actually creating the entries, it seems the device disconnects.

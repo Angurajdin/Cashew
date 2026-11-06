@@ -2,8 +2,13 @@ import 'package:budget/colors.dart';
 import 'package:budget/functions.dart';
 import 'package:budget/main.dart';
 import 'package:budget/pages/addTransactionPage.dart';
+import 'package:budget/struct/cloudSync/cloudInitialSync.dart';
+import 'package:budget/struct/cloudSync/cloudMaintenance.dart';
+import 'package:budget/struct/cloudSync/cloudSyncConfig.dart';
 import 'package:budget/struct/settings.dart';
 import 'package:budget/widgets/accountAndBackup.dart';
+import 'package:budget/widgets/globalSnackbar.dart';
+import 'package:budget/widgets/openSnackbar.dart';
 import 'package:budget/widgets/animatedExpanded.dart';
 import 'package:budget/widgets/button.dart';
 import 'package:budget/widgets/dropdownSelect.dart';
@@ -266,6 +271,15 @@ class AccountsPageState extends State<AccountsPage> {
                             Expanded(
                               child: SyncCloudBackupButton(
                                 onTap: () async {
+                                  if (isFirestoreSyncActive()) {
+                                    openSnackbar(SnackbarMessage(
+                                      title: "cloud-sync-disabled-drive-notice".tr(),
+                                      icon: appStateSettings["outlinedIcons"]
+                                          ? Icons.info_outline
+                                          : Icons.info,
+                                    ));
+                                    return;
+                                  }
                                   chooseBackup(context,
                                       isManaging: true, isClientSync: true);
                                 },
@@ -282,6 +296,109 @@ class AccountsPageState extends State<AccountsPage> {
                           ],
                         ),
                       ),
+                      SizedBox(height: 15),
+                      Padding(
+                        padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: 18.0),
+                        child: SettingsContainerSwitch(
+                          icon: appStateSettings["outlinedIcons"]
+                              ? Icons.cloud_sync_outlined
+                              : Icons.cloud_sync_rounded,
+                          isOutlined: true,
+                          horizontalPadding: 20,
+                          title: "cloud-database-sync".tr(),
+                          description: "cloud-database-sync-description".tr(),
+                          initialValue: isFirestoreSyncActive(),
+                          onSwitched: (value) async {
+                            if (value) {
+                              openPopup(
+                                context,
+                                icon: appStateSettings["outlinedIcons"]
+                                    ? Icons.cloud_sync_outlined
+                                    : Icons.cloud_sync_rounded,
+                                title: "cloud-database-sync".tr(),
+                                description: "cloud-sync-disclaimer".tr(),
+                                onSubmitLabel: "ok".tr(),
+                                onSubmit: () async {
+                                  popRoute(context);
+                                  await updateSettings(
+                                      "cloudSyncProvider", "firestore",
+                                      updateGlobalState: false);
+                                  await updateSettings(
+                                      "cloudSyncEnabled", true,
+                                      updateGlobalState: true);
+                                  setState(() {});
+                                  await runInitialCloudSync();
+                                  if (mounted) setState(() {});
+                                },
+                                onCancelLabel: "cancel".tr(),
+                                onCancel: () {
+                                  popRoute(context);
+                                  setState(() {});
+                                },
+                              );
+                            } else {
+                              await updateSettings(
+                                  "cloudSyncEnabled", false,
+                                  updateGlobalState: true);
+                              setState(() {});
+                            }
+                          },
+                        ),
+                      ),
+                      if (isFirestoreSyncActive()) ...[
+                        SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: 18.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButtonStacked(
+                                  text: "cloud-sync-now".tr(),
+                                  iconData: appStateSettings["outlinedIcons"]
+                                      ? Icons.sync_outlined
+                                      : Icons.sync_rounded,
+                                  onTap: () async {
+                                    await runAllCloudFunctions(context);
+                                    if (mounted) setState(() {});
+                                  },
+                                ),
+                              ),
+                              SizedBox(width: 15),
+                              Expanded(
+                                child: OutlinedButtonStacked(
+                                  text: "delete-cloud-data".tr(),
+                                  iconData: appStateSettings["outlinedIcons"]
+                                      ? Icons.delete_forever_outlined
+                                      : Icons.delete_forever_rounded,
+                                  onTap: () async {
+                                    openPopup(
+                                      context,
+                                      icon: appStateSettings["outlinedIcons"]
+                                          ? Icons.delete_forever_outlined
+                                          : Icons.delete_forever_rounded,
+                                      title: "delete-cloud-data".tr(),
+                                      description:
+                                          "delete-cloud-data-warning".tr(),
+                                      onSubmitLabel: "delete".tr(),
+                                      onSubmit: () async {
+                                        popRoute(context);
+                                        await deleteMyCloudData();
+                                        if (mounted) setState(() {});
+                                      },
+                                      onCancelLabel: "cancel".tr(),
+                                      onCancel: () {
+                                        popRoute(context);
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                       if (kIsWeb)
                         TipBox(
                           padding: const EdgeInsetsDirectional.symmetric(

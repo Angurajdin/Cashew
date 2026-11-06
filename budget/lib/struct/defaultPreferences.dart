@@ -18,6 +18,12 @@ Future<Map<String, dynamic>> getDefaultPreferences() async {
     "databaseJustImported": false,
     "backupLimit": 20,
     "backupSync": true,
+    "cloudSyncProvider": "drive", // "drive", "firestore"
+    "cloudSyncEnabled": false,
+    "cloudInitialSyncDone": false,
+    "cloudSyncRealtime": false,
+    "cloudSyncUid": null,
+    "cloudLastPushedAt": null,
     "syncEveryChange": kIsWeb,
     "devicesHaveBeenSynced": 1,
     "numBackups": 1,

@@ -3708,7 +3708,7 @@ class FinanceDatabase extends _$FinanceDatabase {
                 ),
           );
           batch.insert(wallets, syncLog.itemToUpdate,
-              mode: InsertMode.insertOrReplace);
+              mode: InsertMode.insertOrIgnore);
         } else if (syncLog.updateLogType == UpdateLogType.TransactionCategory) {
           batch.update(
             categories,
@@ -3720,7 +3720,7 @@ class FinanceDatabase extends _$FinanceDatabase {
                 ),
           );
           batch.insert(categories, syncLog.itemToUpdate,
-              mode: InsertMode.insertOrReplace);
+              mode: InsertMode.insertOrIgnore);
         } else if (syncLog.updateLogType == UpdateLogType.Budget) {
           batch.update(
             budgets,
@@ -3732,7 +3732,7 @@ class FinanceDatabase extends _$FinanceDatabase {
                 ),
           );
           batch.insert(budgets, syncLog.itemToUpdate,
-              mode: InsertMode.insertOrReplace);
+              mode: InsertMode.insertOrIgnore);
         } else if (syncLog.updateLogType == UpdateLogType.CategoryBudgetLimit) {
           batch.update(
             categoryBudgetLimits,
@@ -3744,7 +3744,7 @@ class FinanceDatabase extends _$FinanceDatabase {
                 ),
           );
           batch.insert(categoryBudgetLimits, syncLog.itemToUpdate,
-              mode: InsertMode.insertOrReplace);
+              mode: InsertMode.insertOrIgnore);
         } else if (syncLog.updateLogType == UpdateLogType.Transaction) {
           batch.update(
             transactions,
@@ -3756,7 +3756,7 @@ class FinanceDatabase extends _$FinanceDatabase {
                 ),
           );
           batch.insert(transactions, syncLog.itemToUpdate,
-              mode: InsertMode.insertOrReplace);
+              mode: InsertMode.insertOrIgnore);
         } else if (syncLog.updateLogType ==
             UpdateLogType.TransactionAssociatedTitle) {
           batch.update(
@@ -3769,7 +3769,7 @@ class FinanceDatabase extends _$FinanceDatabase {
                 ),
           );
           batch.insert(associatedTitles, syncLog.itemToUpdate,
-              mode: InsertMode.insertOrReplace);
+              mode: InsertMode.insertOrIgnore);
         } else if (syncLog.updateLogType == UpdateLogType.ScannerTemplate) {
           batch.update(
             scannerTemplates,
@@ -3781,7 +3781,7 @@ class FinanceDatabase extends _$FinanceDatabase {
                 ),
           );
           batch.insert(scannerTemplates, syncLog.itemToUpdate,
-              mode: InsertMode.insertOrReplace);
+              mode: InsertMode.insertOrIgnore);
         } else if (syncLog.updateLogType == UpdateLogType.Objective) {
           batch.update(
             objectives,
@@ -3793,7 +3793,7 @@ class FinanceDatabase extends _$FinanceDatabase {
                 ),
           );
           batch.insert(objectives, syncLog.itemToUpdate,
-              mode: InsertMode.insertOrReplace);
+              mode: InsertMode.insertOrIgnore);
         }
       }
     });

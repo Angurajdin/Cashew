@@ -320,6 +320,9 @@ The translations are available here: https://docs.google.com/spreadsheets/d/1QQq
 
 ## Developer Notes
 
+### 🚀 Setup, Firebase Configuration & Cloud Sync Testing
+For full details on configuring your own Firebase project, running the app locally, deploying to Firebase Hosting / Firestore, and manually verifying Cloud Sync, see the **[Setup, Deployment & Cloud Sync Verification Guide](SETUP_AND_TESTING_GUIDE.md)** and the **[Technical Documentation](TECHNICAL_README.md)**.
+
 ### Pull Requests and Contributions
 
 Unfortunately, I am currently not accepting contributions due to licensing and credits. Since this application turns some profits, I want to avoid any muddy water when it comes to compensation for contributions. You are free to submit an [issue](https://github.com/jameskokoska/Cashew/issues) and I can consider it!

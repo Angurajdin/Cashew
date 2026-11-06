@@ -1180,5 +1180,13 @@
   "import-warning": "Import Warning",
   "import-warning-description": "Import may fail! Please make sure you have selected a valid Cashew [.sqlite] or [.sql] backup file",
   "duplicate-budget-question": "Duplicate Budget?",
-  "duplicate-budget": "Duplicate Budget"
+  "duplicate-budget": "Duplicate Budget",
+  "cloud-database-sync": "Cloud Database Sync",
+  "cloud-database-sync-description": "Real-time sync across devices using Cloud Firestore",
+  "cloud-sync-disclaimer": "Your financial data will be securely synced with your cloud database under your Google account.",
+  "cloud-sync-now": "Sync Now",
+  "delete-cloud-data": "Delete Cloud Data",
+  "delete-cloud-data-warning": "Are you sure you want to delete all your cloud data? Local data on this device will not be deleted.",
+  "cloud-data-deleted": "Cloud data deleted",
+  "cloud-sync-disabled-drive-notice": "Drive sync is disabled while Cloud Database Sync is active."
 }
