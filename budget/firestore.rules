@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User data sync subtree (Option A Cloud Sync)
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Shared budgets feature
+    match /budgets/{budgetId} {
+      allow read: if request.auth != null && (
+        resource.data.owner == request.auth.uid ||
+        (request.auth.token.email != null && request.auth.token.email in resource.data.members)
+      );
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && (
+        resource.data.owner == request.auth.uid ||
+        (request.auth.token.email != null && request.auth.token.email in resource.data.members)
+      );
+
+      match /transactions/{transactionId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+  }
+}
